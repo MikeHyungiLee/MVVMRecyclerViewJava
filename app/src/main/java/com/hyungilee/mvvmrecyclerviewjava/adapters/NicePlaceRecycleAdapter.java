@@ -1,6 +1,7 @@
 package com.hyungilee.mvvmrecyclerviewjava.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,17 +23,19 @@ public class NicePlaceRecycleAdapter extends RecyclerView.Adapter<NicePlaceRecyc
 
     private Context mContext;
     private List<NicePlace> mNicePlaces = new ArrayList<>();
+    private OnNicePlaceClickListener mOnNicePlaceClickListener;
 
-    public NicePlaceRecycleAdapter(Context context, List<NicePlace> nicePlaces){
+    public NicePlaceRecycleAdapter(Context context, List<NicePlace> nicePlaces, OnNicePlaceClickListener onNicePlaceClickListener){
         this.mContext = context;
         this.mNicePlaces = nicePlaces;
+        this.mOnNicePlaceClickListener = onNicePlaceClickListener;
     }
 
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_listitem, null);
-        Holder vh = new Holder(view);
+        Holder vh = new Holder(view, mOnNicePlaceClickListener);
         return vh;
     }
 
@@ -55,16 +58,28 @@ public class NicePlaceRecycleAdapter extends RecyclerView.Adapter<NicePlaceRecyc
         return mNicePlaces.size();
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
+    public class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView mImage;
         private TextView mTitle;
+        OnNicePlaceClickListener onNicePlaceClickListener;
 
-        public Holder(@NonNull View itemView) {
+        public Holder(@NonNull View itemView, OnNicePlaceClickListener onNicePlaceClickListener) {
             super(itemView);
             mImage = itemView.findViewById(R.id.image);
             mTitle = itemView.findViewById(R.id.image_name);
+            this.onNicePlaceClickListener = onNicePlaceClickListener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            onNicePlaceClickListener.onNicePlaceClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnNicePlaceClickListener{
+        void onNicePlaceClick(int position);
     }
 
 }

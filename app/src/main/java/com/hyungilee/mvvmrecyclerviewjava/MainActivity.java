@@ -6,7 +6,10 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -17,13 +20,14 @@ import com.hyungilee.mvvmrecyclerviewjava.viewmodels.MainActivityViewModel;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NicePlaceRecycleAdapter.OnNicePlaceClickListener {
 
     private RecyclerView mNicePlacesRecyclerView;
     private NicePlaceRecycleAdapter mNicePlaceRecycleAdapter;
     private MainActivityViewModel mMainActivityViewModel;
     private FloatingActionButton mFab;
     private ProgressBar mProgressbar;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initNicePlacesRecyclerView(){
-        mNicePlaceRecycleAdapter = new NicePlaceRecycleAdapter(this, mMainActivityViewModel.getNicePlaces().getValue());
+        mNicePlaceRecycleAdapter = new NicePlaceRecycleAdapter(this, mMainActivityViewModel.getNicePlaces().getValue(),this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mNicePlacesRecyclerView.setLayoutManager(layoutManager);
         mNicePlacesRecyclerView.setAdapter(mNicePlaceRecycleAdapter);
@@ -91,5 +95,11 @@ public class MainActivity extends AppCompatActivity {
         mProgressbar.setVisibility(View.GONE);
     }
 
-
+    @Override
+    public void onNicePlaceClick(int position) {
+        Log.d(TAG, "onNicePlaceClick: clicked");
+        Intent intent = new Intent(this, NewActivity.class);
+        intent.putExtra("some_object", "something else");
+        startActivity(intent);
+    }
 }
