@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hyungilee.mvvmrecyclerviewjava.adapters.NicePlaceRecycleAdapter;
 import com.hyungilee.mvvmrecyclerviewjava.models.NicePlace;
 import com.hyungilee.mvvmrecyclerviewjava.viewmodels.MainActivityViewModel;
@@ -19,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mNicePlacesRecyclerView;
     private NicePlaceRecycleAdapter mNicePlaceRecycleAdapter;
     private MainActivityViewModel mMainActivityViewModel;
+    private FloatingActionButton mFab;
+    private ProgressBar mProgressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mNicePlacesRecyclerView = findViewById(R.id.niceplaces_recycler_view);
+
+        // Floating action button
+        mFab = findViewById(R.id.floatingActionButton);
+
+        // ProgressBar
+        mProgressbar = findViewById(R.id.progressBar);
 
         // MainActivityViewModel 초기화 시켜주기.
         mMainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
@@ -37,7 +48,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mMainActivityViewModel.getIsUpdating().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    showProgressBar();
+                }else{
+                    hideProgressBar();
+                    //mNicePlacesRecyclerView.smoothScrollToPosition(mMainActivityViewModel.getNicePlaces().getValue().size()-1);
+                }
+            }
+        });
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMainActivityViewModel.addNewValue(
+                        new NicePlace(
+                                "https://i.imgur.com/ZcLLrkY.jpg",
+                                "Washington"
+                        )
+                );
+            }
+        });
+
         initNicePlacesRecyclerView();
+
     }
 
     private void initNicePlacesRecyclerView(){
@@ -45,6 +81,14 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mNicePlacesRecyclerView.setLayoutManager(layoutManager);
         mNicePlacesRecyclerView.setAdapter(mNicePlaceRecycleAdapter);
+    }
+
+    private void showProgressBar(){
+        mProgressbar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar(){
+        mProgressbar.setVisibility(View.GONE);
     }
 
 
